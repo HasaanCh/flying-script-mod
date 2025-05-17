@@ -30,7 +30,12 @@ function flying_scripts_rewrite_html($html)
         if (flying_scripts_is_keyword_included($current_url, $disabled_pages)) {
             return $html;
         }
-
+        
+        // Check if we should skip for returning visitors
+        $first_visit_only = get_option('flying_scripts_first_visit_only');
+        if ($first_visit_only && isset($_COOKIE['flying_scripts_visitor'])) {
+            return $html;
+        }
 
         // Parse HTML
         $newHtml = str_get_html($html);

@@ -1,16 +1,12 @@
 <?php
-function flying_scripts_format_list($list) {
-    $list = trim($list);
-    $list = $list ? array_map('trim', explode("\n", str_replace("\r", "", sanitize_textarea_field($list)))) : [];
-    return $list;
-}
-
 function flying_scripts_view_settings() {
 
     if (isset($_POST['submit'])) {
         update_option('flying_scripts_timeout', sanitize_text_field($_POST['flying_scripts_timeout']));
         update_option('flying_scripts_include_list', flying_scripts_format_list($_POST['flying_scripts_include_list']));
         update_option('flying_scripts_disabled_pages', flying_scripts_format_list($_POST['flying_scripts_disabled_pages']));
+        // Save our new option
+        update_option('flying_scripts_first_visit_only', isset($_POST['flying_scripts_first_visit_only']) ? 1 : 0);
     }
 
     $timeout = esc_attr(get_option('flying_scripts_timeout'));
@@ -22,6 +18,9 @@ function flying_scripts_view_settings() {
     $disabled_pages = get_option('flying_scripts_disabled_pages');
     $disabled_pages = implode("\n", $disabled_pages);
     $disabled_pages = esc_textarea($disabled_pages);
+    
+    // Get our new setting
+    $first_visit_only = get_option('flying_scripts_first_visit_only');
 
     ?>
 <form method="POST">
@@ -59,6 +58,14 @@ function flying_scripts_view_settings() {
             <td>
                 <textarea name="flying_scripts_disabled_pages" rows="4" cols="50"><?php echo $disabled_pages; ?></textarea>
                 <p class="description">Keywords of URLs where Flying Scripts should be disabled</p>
+            </td>
+        </tr>
+        <!-- Add our new option -->
+        <tr>
+            <th scope="row"><label>Disable for returning visitors</label></th>
+            <td>
+                <input type="checkbox" name="flying_scripts_first_visit_only" value="1" <?php checked(1, $first_visit_only); ?>>
+                <p class="description">When enabled, scripts will only be delayed for the first visit. Returning visitors will get scripts loaded normally.</p>
             </td>
         </tr>
     </tbody>

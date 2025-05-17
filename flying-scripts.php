@@ -17,6 +17,13 @@ if (! defined('WPINC')) {
 // Define constant with current version
 define('FLYING_SCRIPTS_VERSION', '1.2.4');
 
+// Make sure format_list function is available globally
+function flying_scripts_format_list($list) {
+    $list = trim($list);
+    $list = $list ? array_map('trim', explode("\n", str_replace("\r", "", sanitize_textarea_field($list)))) : [];
+    return $list;
+}
+
 include('init-config.php');
 include('settings/index.php');
 include('inject-js.php');
