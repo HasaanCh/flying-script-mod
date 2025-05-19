@@ -1,26 +1,20 @@
 <?php
 function flying_scripts_view_settings() {
-
     if (isset($_POST['submit'])) {
         update_option('flying_scripts_timeout', sanitize_text_field($_POST['flying_scripts_timeout']));
         update_option('flying_scripts_include_list', flying_scripts_format_list($_POST['flying_scripts_include_list']));
         update_option('flying_scripts_disabled_pages', flying_scripts_format_list($_POST['flying_scripts_disabled_pages']));
-        // Save our new option
         update_option('flying_scripts_first_visit_only', isset($_POST['flying_scripts_first_visit_only']) ? 1 : 0);
+        // Save new option for jQuery-dependent scripts
+        update_option('flying_scripts_jquery_dependent', flying_scripts_format_list($_POST['flying_scripts_jquery_dependent']));
     }
 
     $timeout = esc_attr(get_option('flying_scripts_timeout'));
-
-    $include_list = get_option('flying_scripts_include_list');
-    $include_list = implode("\n", $include_list);
-    $include_list = esc_textarea($include_list);
-
-    $disabled_pages = get_option('flying_scripts_disabled_pages');
-    $disabled_pages = implode("\n", $disabled_pages);
-    $disabled_pages = esc_textarea($disabled_pages);
-    
-    // Get our new setting
+    $include_list = esc_textarea(implode("\n", (array) get_option('flying_scripts_include_list')));
+    $disabled_pages = esc_textarea(implode("\n", (array) get_option('flying_scripts_disabled_pages')));
     $first_visit_only = get_option('flying_scripts_first_visit_only');
+    // Get new option
+    $jquery_dependent = esc_textarea(implode("\n", (array) get_option('flying_scripts_jquery_dependent')));
 
     ?>
 <form method="POST">
@@ -32,6 +26,14 @@ function flying_scripts_view_settings() {
             <td>
                 <textarea name="flying_scripts_include_list" rows="4" cols="50"><?php echo $include_list ?></textarea>
                 <p class="description">Keywords that identify scripts that should load on user interaction. One keyword per line.</p>
+            </td>
+        </tr>
+        <!-- New field for jQuery-dependent scripts -->
+        <tr>
+            <th scope="row"><label>jQuery-Dependent Scripts</label></th>
+            <td>
+                <textarea name="flying_scripts_jquery_dependent" rows="4" cols="50"><?php echo $jquery_dependent ?></textarea>
+                <p class="description">Keywords that identify scripts that depend on jQuery. These will load after jQuery is available. One keyword per line.</p>
             </td>
         </tr>
         <tr>
@@ -50,8 +52,8 @@ function flying_scripts_view_settings() {
                     <option value="10" <?php if ($timeout == 10) {echo 'selected';} ?>>10s</option>
                     <option value="5000" <?php if ($timeout == 5000) {echo 'selected';} ?>>Never</option>
                 </select>
-            <p class="description">Load scripts after a timeout when there is no user interaction</p>
-            <td>
+                <p class="description">Load scripts after a timeout when there is no user interaction</p>
+            </td>
         </tr>
         <tr>
             <th scope="row"><label>Disable on pages</label></th>
@@ -60,7 +62,6 @@ function flying_scripts_view_settings() {
                 <p class="description">Keywords of URLs where Flying Scripts should be disabled</p>
             </td>
         </tr>
-        <!-- Add our new option -->
         <tr>
             <th scope="row"><label>Disable for returning visitors</label></th>
             <td>

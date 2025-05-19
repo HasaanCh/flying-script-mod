@@ -1,16 +1,14 @@
 <?php
-// Set default config on plugin load if not set
 function flying_scripts_set_default_config() {
-    // Check if version has changed
     $current_version = get_option('FLYING_SCRIPTS_VERSION');
     
     if (FLYING_SCRIPTS_VERSION !== $current_version) {
-        // Set default options if they don't exist
         $defaults = array(
             'flying_scripts_timeout' => 5,
             'flying_scripts_include_list' => array(),
             'flying_scripts_disabled_pages' => array(),
-            'flying_scripts_first_visit_only' => 0
+            'flying_scripts_first_visit_only' => 0,
+            'flying_scripts_jquery_dependent' => array() // New default option
         );
         
         foreach ($defaults as $option_name => $default_value) {
@@ -19,7 +17,6 @@ function flying_scripts_set_default_config() {
             }
         }
         
-        // Update the version number
         update_option('FLYING_SCRIPTS_VERSION', FLYING_SCRIPTS_VERSION);
     }
 }
